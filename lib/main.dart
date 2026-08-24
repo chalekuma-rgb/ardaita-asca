@@ -264,7 +264,6 @@ class _MainLayoutState extends State<MainLayout> {
         itemBuilder: (context) => const [
           PopupMenuItem<int?>(value: null, child: Text('Volunteer')),
           PopupMenuItem<int?>(value: 0, child: Text('Become a Volunteer')),
-          PopupMenuItem<int?>(value: 1, child: Text('Our Volunteers')),
         ],
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -446,11 +445,9 @@ class _VolunteerWrapperState extends State<VolunteerWrapper> {
                         color: Colors.white.withOpacity(0.93),
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      child: AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 300),
-                        child: selectedSubTab == 0
-                            ? const BecomeVolunteerPage()
-                            : const VolunteersListPage(),
+                      child: const AnimatedSwitcher(
+                        duration: Duration(milliseconds: 300),
+                        child: BecomeVolunteerPage(),
                       ),
                     ),
             ),
@@ -2614,92 +2611,3 @@ class _BecomeVolunteerPageState extends State<BecomeVolunteerPage> {
   }
 }
 
-class VolunteersListPage extends StatefulWidget {
-  const VolunteersListPage({super.key});
-
-  @override
-  State<VolunteersListPage> createState() => _VolunteersListPageState();
-}
-
-class _VolunteersListPageState extends State<VolunteersListPage> {
-  @override
-  Widget build(BuildContext context) {
-    final List<Map<String, String>> mockVolunteers = [
-      {'name': 'Chalachew Kuma', 'initiative': 'Education', 'role': 'Teacher'},
-      {
-        'name': 'Fikru H/Mariam',
-        'initiative': 'Enviroment Protection',
-        'role': 'Enviromental Activist',
-      },
-      {
-        'name': 'Haregot Kelay',
-        'initiative': 'Social Care',
-        'role': 'Youth Mentor',
-      },
-      {
-        'name': 'Mekete Kuma',
-        'initiative': 'Economic Activities',
-        'role': 'Community Outreach',
-      },
-      {
-        'name': 'Eyob Diriba',
-        'initiative': 'Health',
-        'role': 'Medical Advisor',
-      },
-    ];
-
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(48.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Our Volunteers',
-            style: Theme.of(context).textTheme.displayMedium,
-          ),
-          const SizedBox(height: 32),
-          Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.green.shade100),
-            ),
-            child: DataTable(
-              headingRowColor: WidgetStateProperty.all(Colors.green.shade50),
-              columns: const [
-                DataColumn(
-                  label: Text(
-                    'Name',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-                DataColumn(
-                  label: Text(
-                    'Initiative',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-                DataColumn(
-                  label: Text(
-                    'Role',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ],
-              rows: mockVolunteers.map((volunteer) {
-                return DataRow(
-                  cells: [
-                    DataCell(Text(volunteer['name']!)),
-                    DataCell(Text(volunteer['initiative']!)),
-                    DataCell(Text(volunteer['role']!)),
-                  ],
-                );
-              }).toList(),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
