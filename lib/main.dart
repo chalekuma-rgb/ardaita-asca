@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'backend/app_backend.dart';
-import 'backend/form_validators.dart';
-import 'models/contact_message.dart';
-import 'models/volunteer_application.dart';
+import 'form_validators.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await AppBackend.initialize();
   runApp(const MyTrendingWebApp());
 }
 
@@ -18,7 +14,7 @@ class MyTrendingWebApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Ardaita and its Surrounding Charittable Association',
+      title: 'Ardaita and Surrounding Charity Association',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
@@ -95,11 +91,8 @@ class _MainLayoutState extends State<MainLayout> {
           width: 50,
           height: 50,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            image: const DecorationImage(
-              image: AssetImage('assets/New_Logo.jpg'),
-              fit: BoxFit.cover,
-            ),
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(50),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.2),
@@ -107,6 +100,14 @@ class _MainLayoutState extends State<MainLayout> {
                 offset: const Offset(0, 2),
               ),
             ],
+          ),
+          child: ClipOval(
+            child: Image.asset(
+              'assets/New_Logo.jpg',
+              width: 50,
+              height: 50,
+              fit: BoxFit.cover,
+            ),
           ),
         ),
         actions: [
@@ -639,14 +640,14 @@ class HomePage extends StatelessWidget {
                 const SizedBox(height: 24),
                 const MaxWidthContainer(
                   child: Text(
-                    'Ardaita and its Surrounding Charittable Association is a community-driven organization dedicated to fostering sustainable progress, equitable education, and accessible healthcare in the Ardaita region.',
+                    'Ardaita and Surrounding Charity Association is a community-driven organization dedicated to fostering sustainable progress, equitable education, and accessible healthcare in the Ardaita region.',
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 18, height: 1.6),
                   ),
                 ),
                 const SizedBox(height: 32),
                 TextButton(
-                  onPressed: () => onNavigate(1),
+                  onPressed: () => onNavigate(1, 0),
                   child: const Text(
                     'Read our full story →',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -701,14 +702,19 @@ class HomePage extends StatelessWidget {
                       width: 60,
                       height: 60,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        image: const DecorationImage(
-                          image: AssetImage('assets/New_Logo.jpg'),
-                          fit: BoxFit.cover,
-                        ),
+                        color: Colors.green.shade900,
+                        borderRadius: BorderRadius.circular(50),
                         border: Border.all(
                           color: Colors.white.withOpacity(0.5),
                           width: 2,
+                        ),
+                      ),
+                      child: ClipOval(
+                        child: Image.asset(
+                          'assets/New_Logo.jpg',
+                          width: 60,
+                          height: 60,
+                          fit: BoxFit.cover,
                         ),
                       ),
                     ),
@@ -717,7 +723,7 @@ class HomePage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Ardaita and its Surrounding Charittable Association',
+                          'Ardaita and Surrounding Charity Association',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 18,
@@ -734,7 +740,7 @@ class HomePage extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
                 const Text(
-                  '© 2026 Ardaita and its Surrounding Charittable Association. All rights reserved.',
+                  '© 2026 Ardaita and Surrounding Charity Association. All rights reserved.',
                   style: TextStyle(color: Colors.white70),
                 ),
                 const SizedBox(height: 8),
@@ -891,11 +897,8 @@ class WhoWeAreTab extends StatelessWidget {
               width: 100,
               height: 100,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                image: const DecorationImage(
-                  image: AssetImage('assets/New_Logo.jpg'),
-                  fit: BoxFit.cover,
-                ),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(50),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.2),
@@ -908,9 +911,84 @@ class WhoWeAreTab extends StatelessWidget {
                   width: 2,
                 ),
               ),
+              child: ClipOval(
+                child: Image.asset(
+                  'assets/New_Logo.jpg',
+                  width: 100,
+                  height: 100,
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
           ),
           const SizedBox(height: 32),
+          Text(
+            'Why the Association Was Established',
+            style: Theme.of(context).textTheme.displayMedium,
+          ),
+          const SizedBox(height: 12),
+          const Text(
+            'The association brings people connected to Ardaita together around a shared commitment to unity, opportunity, and lasting community wellbeing.',
+            style: TextStyle(fontSize: 18, height: 1.6, color: Colors.black87),
+          ),
+          const SizedBox(height: 28),
+          _buildRationaleCard(
+            context,
+            number: '01',
+            title: 'To Preserve Unity and Strengthen Lifelong Relationships',
+            english:
+                'The Association is established to preserve and strengthen the bonds of unity, brotherhood, and sisterhood among individuals connected to Ardaita.',
+            amharic:
+                'አንድነትን ለማስጠበቅ እና የረጅም ጊዜ ግንኙነቶችን ለማጠናከር (ማህበሩ ከአርዳይታ ጋር የተያያዙ ግለሰቦች መካከል ያለውን የአንድነት፣ የወንድማማችነት እና የእህትማማችነት ትስስር ለማስጠበቅ እና ለማጠናከር ይመሰረታል።)',
+            oromo:
+                'Sababoota Maaliif Waldaan Hundeeffamaa? a. Tokkummaa Eeguufi Hariiroo Yeroo Dheeraa Cimsuuf (Waldaan kun namoota Ardaita waliin walqabatan gidduutti tokkummaa, obbolummaa fi obboleettiummaa jabeessuufi eeguuf hundeeffameera.)',
+          ),
+          _buildRationaleCard(
+            context,
+            number: '02',
+            title: 'To Provide Organized and Transparent Community Support',
+            english:
+                'The Association is established to create a transparent and organized system through which members can collectively support education, health, vulnerable groups, and other social priorities in a fair and accountable manner.',
+            amharic:
+                'የተደራጀ እና ግልፅ የማህበረሰብ ድጋፍ ለማቅረብ (ማህበሩ አባላት በተባበሩ መንገድ ትምህርት፣ ጤና፣ ለተጋለጡ ቡድኖች እና ሌሎች ማህበራዊ ቅድሚያዎች ድጋፍ እንዲያደርጉ ፍትሃዊ እና ተጠያቂ የሆነ ግልፅ እና የተደራጀ ስርዓት ለመፍጠር ይመሰረታል።)',
+            oromo:
+                'Deeggarsa Hawaasaa Qindaa’aa fi Iftoomina Qabu Kennuuf (Waldaan kun sirna iftoominaa fi qindoomina qabu ijaaruuf hundeeffameera; kanaan miseensonni haala haqaa fi itti gaafatamummaa qabuun barnoota, fayyaa, gareewwan miidhamoo fi dhimma hawaasummaa biroo irratti waloon deeggarsa kennu danda’u.)',
+          ),
+          _buildRationaleCard(
+            context,
+            number: '03',
+            title: 'To Promote Sustainable Social and Economic Development',
+            english:
+                'The Association is established to mobilize resources, knowledge, and networks to promote education, health, environmental protection, livelihood improvement, and social care in a coordinated way.',
+            amharic:
+                'ዘላቂ ማህበራዊ እና ኢኮኖሚያዊ ልማት ለማበረታታት (ማህበሩ ትምህርት፣ ጤና፣ አካባቢ ጥበቃ፣ የኑሮ ማሻሻያ እና ማህበራዊ እንክብካቤ በተቀናጀ መንገድ እንዲጎለብቱ ሀብት፣ እውቀት እና አውታረ መረቦችን ለማቅረብ ይመሰረታል።)',
+            oromo:
+                'Misooma Hawaasummaa fi Dinagdee Itti Fufiinsa Qabu Jajjabeessuuf (Waldaan kun qabeenya, beekumsa fi walitti hidhamiinsa namootaa kakaasuudhaan barnoota, fayyaa, eegumsa naannoo, fooyya’iinsa jireenyaa fi tajaajila hawaasummaa haala qindaa’een guddisuuf hundeeffameera.)',
+          ),
+          _buildRationaleCard(
+            context,
+            number: '04',
+            title:
+                'To Ensure Inclusiveness Across Location, Income, and Background',
+            english:
+                'The Association is established to provide an inclusive platform where all eligible members, regardless of location or economic capacity, can participate meaningfully and contribute according to their ability.',
+            amharic:
+                'በአካባቢ፣ በገቢ እና በመሠረታዊ አይነቶች ሁሉ ላይ አካታችነትን ለማረጋገጥ (ማህበሩ ሁሉም ብቁ አባላት ከየትኛውም አካባቢ ወይም የኢኮኖሚ አቅም ምንም ሆነ ተሳትፎ እንዲያደርጉ እና በአቅማቸው መሰረት እንዲያበረክቱ የሚያስችል አካታች መድረክ ለመፍጠር ይመሰረታል።)',
+            oromo:
+                'Hirmaachisummaa Hunda Hammataa Mirkaneessuuf (Waldaan kun miseensonni ulaagaa guutan hundi, bakka jireenyaa ykn haala dinagdee isaanii osoo hin ilaalin, hiika qabuun akka hirmaatanii fi dandeettii isaanii irratti hundaa’uun akka gumaachan waltajjii hunda hammataa ta’e uumuuf hundeeffameera.)',
+          ),
+          _buildRationaleCard(
+            context,
+            number: '05',
+            title: 'To Build a Foundation for Future Generations',
+            english:
+                'The Association is established not only for present needs but also to create a lasting institutional foundation that promotes intergenerational solidarity and long-term community resilience.',
+            amharic:
+                'ለወደፊት ትውልዶች መሠረት ለመገንባት (ማህበሩ የዛሬን ፍላጎቶች ብቻ ሳይሆን ትውልድ ተሻጋሪ አንድነትን እና የረጅም ጊዜ የማህበረሰብ ብርታትን የሚያበረታታ ዘላቂ የተቋማዊ መሠረት ለመፍጠር ይመሰረታል።)',
+            oromo:
+                'Bu’uura Dhaloota Itti Aanuu Ijaaruuuf (Waldaan kun fedhii yeroo ammaa qofaaf osoo hin taane, tokkummaa dhaloota gidduutti jiru cimsuufi jabina hawaasaa yeroo dheeraa tiksu bu’uura dhaabbataa fi waaraa uumuuf hundeeffameera.)',
+          ),
+          const SizedBox(height: 48),
           Text(
             'Organizational Structure',
             style: Theme.of(context).textTheme.displayMedium,
@@ -1221,6 +1299,66 @@ class WhoWeAreTab extends StatelessWidget {
   Widget _buildVerticalLine({double height = 40}) {
     return Container(height: height, width: 2, color: const Color(0xFF2E7D32));
   }
+
+  Widget _buildRationaleCard(
+    BuildContext context, {
+    required String number,
+    required String title,
+    required String english,
+    required String amharic,
+    required String oromo,
+  }) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 16),
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(14),
+        side: BorderSide(color: Colors.green.shade100),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  number,
+                  style: TextStyle(
+                    color: Colors.green.shade700,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 14),
+            Text(english, style: const TextStyle(fontSize: 16, height: 1.55)),
+            const SizedBox(height: 14),
+            Text(amharic, style: const TextStyle(fontSize: 16, height: 1.7)),
+            const SizedBox(height: 14),
+            Text(
+              oromo,
+              style: const TextStyle(
+                fontSize: 16,
+                height: 1.65,
+                fontStyle: FontStyle.italic,
+                color: Colors.black87,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class WhatWeDoTab extends StatelessWidget {
@@ -1243,7 +1381,7 @@ class WhatWeDoTab extends StatelessWidget {
           Text('Mission', style: Theme.of(context).textTheme.displayMedium),
           const SizedBox(height: 16),
           const Text(
-            'Ardaita and its Surrounding Charittable Association is a charitable organization committed to improving the quality of life in our community by:',
+            'Ardaita and Surrounding Charity Association is a charitable organization committed to improving the quality of life in our community by:',
             style: TextStyle(fontSize: 18, height: 1.6),
           ),
           const SizedBox(height: 24),
@@ -1413,11 +1551,8 @@ class InitiativesTab extends StatelessWidget {
               width: 100,
               height: 100,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                image: const DecorationImage(
-                  image: AssetImage('assets/New_Logo.jpg'),
-                  fit: BoxFit.cover,
-                ),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(50),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.2),
@@ -1428,6 +1563,14 @@ class InitiativesTab extends StatelessWidget {
                 border: Border.all(
                   color: Colors.green.withOpacity(0.3),
                   width: 2,
+                ),
+              ),
+              child: ClipOval(
+                child: Image.asset(
+                  'assets/New_Logo.jpg',
+                  width: 100,
+                  height: 100,
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
@@ -1984,13 +2127,21 @@ class _ContactUsPageState extends State<ContactUsPage> {
     });
 
     try {
-      final result = await AppBackend.formSubmissionService.submitContact(
-        ContactMessage(
-          fullName: _nameController.text.trim(),
-          email: _emailController.text.trim(),
-          message: _messageController.text.trim(),
-        ),
+      final mailtoUri = Uri(
+        scheme: 'mailto',
+        path: 'info@ardaitaunity.org',
+        queryParameters: {
+          'subject': 'Contact request from ${_nameController.text.trim()}',
+          'body':
+              'Name: ${_nameController.text.trim()}\n'
+              'Email: ${_emailController.text.trim()}\n\n'
+              '${_messageController.text.trim()}',
+        },
       );
+      final opened = await launchUrl(mailtoUri);
+      if (!opened) {
+        throw StateError('Unable to open an email application.');
+      }
 
       if (!mounted) {
         return;
@@ -1999,7 +2150,7 @@ class _ContactUsPageState extends State<ContactUsPage> {
       setState(() {
         _isSubmitting = false;
         _submissionSucceeded = true;
-        _feedbackMessage = result.message;
+        _feedbackMessage = 'Your email draft is ready to send.';
       });
 
       _formKey.currentState?.reset();
@@ -2021,8 +2172,6 @@ class _ContactUsPageState extends State<ContactUsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final backendConfigured = AppBackend.formSubmissionService.isConfigured;
-
     return SingleChildScrollView(
       padding: const EdgeInsets.all(48.0),
       child: Column(
@@ -2071,13 +2220,6 @@ class _ContactUsPageState extends State<ContactUsPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if (!backendConfigured) ...[
-                        _buildFeedbackBanner(
-                          'Live submissions are disabled in this build. Set API_BASE_URL or enable Firebase sync to receive messages.',
-                          success: false,
-                        ),
-                        const SizedBox(height: 24),
-                      ],
                       if (_feedbackMessage != null) ...[
                         _buildFeedbackBanner(
                           _feedbackMessage!,
@@ -2419,14 +2561,23 @@ class _BecomeVolunteerPageState extends State<BecomeVolunteerPage> {
     });
 
     try {
-      final result = await AppBackend.formSubmissionService.submitVolunteer(
-        VolunteerApplication(
-          fullName: _nameController.text.trim(),
-          email: _emailController.text.trim(),
-          initiative: selectedInitiative!.trim(),
-          motivation: _motivationController.text.trim(),
-        ),
+      final mailtoUri = Uri(
+        scheme: 'mailto',
+        path: 'info@ardaitaunity.org',
+        queryParameters: {
+          'subject':
+              'Volunteer application from ${_nameController.text.trim()}',
+          'body':
+              'Name: ${_nameController.text.trim()}\n'
+              'Email: ${_emailController.text.trim()}\n'
+              'Initiative: ${selectedInitiative!.trim()}\n\n'
+              'Motivation:\n${_motivationController.text.trim()}',
+        },
       );
+      final opened = await launchUrl(mailtoUri);
+      if (!opened) {
+        throw StateError('Unable to open an email application.');
+      }
 
       if (!mounted) {
         return;
@@ -2435,7 +2586,7 @@ class _BecomeVolunteerPageState extends State<BecomeVolunteerPage> {
       setState(() {
         _isSubmitting = false;
         _submissionSucceeded = true;
-        _feedbackMessage = result.message;
+        _feedbackMessage = 'Your volunteer application draft is ready to send.';
         selectedInitiative = null;
       });
 
@@ -2458,8 +2609,6 @@ class _BecomeVolunteerPageState extends State<BecomeVolunteerPage> {
 
   @override
   Widget build(BuildContext context) {
-    final backendConfigured = AppBackend.formSubmissionService.isConfigured;
-
     return SingleChildScrollView(
       padding: const EdgeInsets.all(48.0),
       child: Column(
@@ -2480,13 +2629,6 @@ class _BecomeVolunteerPageState extends State<BecomeVolunteerPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (!backendConfigured) ...[
-                  _buildFeedbackBanner(
-                    'Live submissions are disabled in this build. Set API_BASE_URL or enable Firebase sync to receive volunteer applications.',
-                    success: false,
-                  ),
-                  const SizedBox(height: 24),
-                ],
                 if (_feedbackMessage != null) ...[
                   _buildFeedbackBanner(
                     _feedbackMessage!,
@@ -2610,4 +2752,3 @@ class _BecomeVolunteerPageState extends State<BecomeVolunteerPage> {
         : message;
   }
 }
-

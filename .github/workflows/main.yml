@@ -11,10 +11,6 @@ permissions:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    env:
-      PRODUCTION_API_BASE_URL: ${{ secrets.PRODUCTION_API_BASE_URL || 'https://qkvroehsycfvrlfclskp.supabase.co/rest/v1' }}
-      RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
-      RAILWAY_DEPLOY_HOOK_URL: ${{ secrets.RAILWAY_DEPLOY_HOOK_URL }}
 
     steps:
       - name: Checkout repository
@@ -33,7 +29,6 @@ jobs:
         run: >-
           flutter build web --release
           --base-href /Ardaita-Unity-and-Development-Association/
-          --dart-define=API_BASE_URL=${PRODUCTION_API_BASE_URL}
 
       - name: Prepare GitHub Pages site
         run: |
@@ -41,14 +36,6 @@ jobs:
           mkdir -p docs
           cp -R build/web/. docs/
           touch docs/.nojekyll
-
-      - name: Trigger backend deployment (Render)
-        if: ${{ env.RENDER_DEPLOY_HOOK_URL != '' }}
-        run: curl -fsSL -X POST "$RENDER_DEPLOY_HOOK_URL"
-
-      - name: Trigger backend deployment (Railway)
-        if: ${{ env.RAILWAY_DEPLOY_HOOK_URL != '' }}
-        run: curl -fsSL -X POST "$RAILWAY_DEPLOY_HOOK_URL"
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4

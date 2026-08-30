@@ -57,47 +57,7 @@ cd Ardaita-Unity-and-Development-Association
 flutter pub get
 ```
 
-### 4. Configure Form Backends
-
-The site now supports two backend paths:
-
-- a Node.js REST API in [backend](backend)
-- optional Firebase Firestore sync in the Flutter app
-
-Read the full architecture in [docs/backend-architecture.md](docs/backend-architecture.md).
-
-### 5. Run The Node Backend
-
-Install Node.js 20 or newer, then run:
-
-```bash
-cd backend
-npm install
-npm start
-```
-
-The API will start on `http://localhost:3000` by default.
-
-### 6. Run The Flutter App Against The API
-
-```bash
-flutter run -d chrome --dart-define=API_BASE_URL=http://localhost:3000
-```
-
-To enable Firebase sync as well, provide Firebase values at runtime:
-
-```bash
-flutter run -d chrome \
-	--dart-define=API_BASE_URL=http://localhost:3000 \
-	--dart-define=ENABLE_FIREBASE_SYNC=true \
-	--dart-define=FIREBASE_API_KEY=your-key \
-	--dart-define=FIREBASE_APP_ID=your-app-id \
-	--dart-define=FIREBASE_MESSAGING_SENDER_ID=your-sender-id \
-	--dart-define=FIREBASE_PROJECT_ID=your-project-id \
-	--dart-define=FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
-```
-
-### 7. Run the App (Development)
+### 4. Run the App (Development)
 
 ```bash
 flutter run -d chrome
@@ -114,30 +74,6 @@ flutter build web --base-href /Ardaita-Unity-and-Development-Association/
 ```
 
 The compiled output will be in the `build/web/` directory. Deploy the contents of that directory to any static web hosting service (e.g., Firebase Hosting, GitHub Pages, Netlify, or any web server).
-
-If you need live form submissions in the deployed app, build with your production API URL:
-
-```bash
-flutter build web \
-	--base-href /Ardaita-Unity-and-Development-Association/ \
-	--dart-define=API_BASE_URL=https://your-backend.example.com
-```
-
-### Production Deployment Wiring
-
-The repository is now prepared for this deployment shape:
-
-- Flutter frontend on GitHub Pages
-- Node backend on Render using [render.yaml](render.yaml)
-
-To complete production wiring, configure these GitHub repository secrets:
-
-- `PRODUCTION_API_BASE_URL`
-	Example: `https://your-render-service.onrender.com`
-- `RENDER_DEPLOY_HOOK_URL`
-	Optional, but recommended for automatic backend redeploys after pushes to `main`
-
-Once `PRODUCTION_API_BASE_URL` is set, pushes to `main` will rebuild the GitHub Pages site with the live API base URL embedded into the production Flutter build.
 
 ### Build for Other Platforms
 
@@ -168,20 +104,8 @@ flutter test
 
 ---
 
-## Supabase Integration
-
-This project is integrated with Supabase for backend form submissions. For detailed setup and configuration, see [SUPABASE_INTEGRATION.md](./SUPABASE_INTEGRATION.md).
-
-**Quick Start:**
-```bash
-flutter run -d chrome --dart-define=API_BASE_URL=https://qkvroehsycfvrlfclskp.supabase.co/rest/v1
-```
-
----
-
 ## Resources
 
 - [Flutter documentation](https://docs.flutter.dev/)
 - [Flutter installation guide](https://docs.flutter.dev/get-started/install)
 - [pub.dev – Dart & Flutter package repository](https://pub.dev)
-- [Supabase Documentation](https://supabase.com/docs)
