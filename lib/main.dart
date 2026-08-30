@@ -24,35 +24,44 @@ class MyTrendingWebApp extends StatelessWidget {
         useMaterial3: true,
         fontFamily: 'Segoe UI',
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.green,
-          primary: const Color(0xFF2E7D32), // Dark Green
-          surface: const Color(0xFFFFFFF0), // Ivory White
+          seedColor: const Color(0xFF2E7D32),
+          primary: const Color(0xFF2E7D32),
+          secondary: const Color(0xFF1B5E20),
+          surface: const Color(0xFFFCF7EE),
         ),
-        scaffoldBackgroundColor: const Color(0xFFFFFFF0),
+        scaffoldBackgroundColor: const Color(0xFFFCF7EE),
         appBarTheme: const AppBarTheme(
           backgroundColor: Color(0xFF2E7D32),
           foregroundColor: Colors.white,
           elevation: 2,
           titleSpacing: 20,
-          toolbarHeight: 72,
+          toolbarHeight: 74,
         ),
         textTheme: const TextTheme(
           displayLarge: TextStyle(
             color: Color(0xFF2E7D32),
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w800,
             fontSize: 48,
+            letterSpacing: -0.8,
           ),
           displayMedium: TextStyle(
             color: Color(0xFF2E7D32),
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w800,
             fontSize: 32,
+            letterSpacing: -0.6,
           ),
           titleLarge: TextStyle(
             color: Color(0xFF2E7D32),
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w700,
+            letterSpacing: -0.2,
           ),
-          bodyLarge: TextStyle(fontSize: 18, height: 1.6),
+          bodyLarge: TextStyle(
+            fontSize: 18,
+            height: 1.58,
+            color: Color(0xFF1F2A1F),
+          ),
         ),
+        dividerColor: Colors.green.shade200,
       ),
       home: const MainLayout(),
     );
@@ -83,9 +92,21 @@ class _HoverableFloatingMenuState extends State<HoverableFloatingMenu> {
       onEnter: (_) => setState(() => _isHovering = true),
       onExit: (_) => setState(() => _isHovering = false),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        curve: Curves.easeOut,
-        transform: Matrix4.translationValues(0, _isHovering ? -3 : 0, 0),
+        duration: const Duration(milliseconds: 170),
+        curve: Curves.easeOutCubic,
+        transform: Matrix4.translationValues(0, _isHovering ? -2 : 0, 0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: _isHovering
+              ? [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.08),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ]
+              : null,
+        ),
         child: widget.child,
       ),
     );
@@ -247,16 +268,19 @@ class _HoverDropdownMenuState extends State<HoverDropdownMenu> {
           if (!_isOpen) _open();
         },
         onExit: (_) => _scheduleClose(),
-        child: InkWell(
-          onTap: () {
-            if (_isOpen) {
-              _close();
-            } else {
-              _open();
-            }
-          },
-          borderRadius: BorderRadius.circular(8),
-          child: trigger,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 2),
+          child: InkWell(
+            onTap: () {
+              if (_isOpen) {
+                _close();
+              } else {
+                _open();
+              }
+            },
+            borderRadius: BorderRadius.circular(8),
+            child: trigger,
+          ),
         ),
       ),
     );
@@ -416,9 +440,10 @@ class _MainLayoutState extends State<MainLayout> {
           style: TextButton.styleFrom(
             foregroundColor: isSelected ? Colors.white : Colors.green.shade100,
             backgroundColor: isSelected
-                ? Colors.white.withOpacity(0.1)
+                ? Colors.white.withOpacity(0.12)
                 : Colors.transparent,
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            minimumSize: const Size(0, 42),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
             ),
@@ -426,9 +451,9 @@ class _MainLayoutState extends State<MainLayout> {
           child: Text(
             label,
             style: TextStyle(
-              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
               fontSize: 14,
-              letterSpacing: 0.15,
+              letterSpacing: 0.12,
             ),
           ),
         ),
@@ -740,17 +765,24 @@ class HomePage extends StatelessWidget {
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 56,
-                            fontWeight: FontWeight.bold,
+                            fontSize: 54,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -1.1,
+                            height: 1.1,
                           ),
                         ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 18),
                         const Text(
                           'Unity, Development, and Sustainable Growth for our Community',
                           textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.white, fontSize: 24),
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 23,
+                            fontWeight: FontWeight.w500,
+                            letterSpacing: 0.05,
+                          ),
                         ),
-                        const SizedBox(height: 40),
+                        const SizedBox(height: 36),
                         Wrap(
                           spacing: 20,
                           runSpacing: 20,
@@ -829,10 +861,10 @@ class HomePage extends StatelessWidget {
 
           // Features/Stats Summary
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 80, horizontal: 40),
+            padding: const EdgeInsets.symmetric(vertical: 70, horizontal: 40),
             child: Wrap(
-              spacing: 40,
-              runSpacing: 40,
+              spacing: 32,
+              runSpacing: 32,
               alignment: WrapAlignment.center,
               children: [
                 _buildStatItem(
