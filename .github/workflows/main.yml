@@ -28,7 +28,7 @@ jobs:
       - name: Build Flutter Web
         run: >-
           flutter build web --release
-          --base-href /Ardaita-Unity-and-Development-Association/
+          --base-href /ardaita_website/
 
       - name: Prepare GitHub Pages site
         run: |

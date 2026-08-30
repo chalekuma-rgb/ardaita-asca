@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:html' as html;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -2030,16 +2032,6 @@ class ResourcesPage extends StatelessWidget {
 
   static const List<Map<String, String>> _resources = [
     {
-      'name': 'Ardaita_Amharic.pdf',
-      'assetPath': 'assets/Ardaita_Amharic.pdf',
-      'description': 'Official community development document in Amharic',
-    },
-    {
-      'name': 'Ardaayita _ Afaan_Oromo.docx',
-      'assetPath': 'assets/Ardaayita _ Afaan_Oromo.docx',
-      'description': 'Community development document in Afaan Oromo',
-    },
-    {
       'name': 'Ardaita_English Vesrion.docx',
       'assetPath': 'assets/Ardaita_English Vesrion.docx',
       'description': 'Community development document in English',
@@ -2066,17 +2058,69 @@ class ResourcesPage extends StatelessWidget {
     },
   ];
 
-  Future<void> _openResource(BuildContext context, String assetPath) async {
-    // Convert asset path to GitHub raw content URL
+  static Uri buildDownloadUri(String assetPath) {
     final fileName = assetPath.replaceFirst('assets/', '');
-    final githubUrl =
-        'https://github.com/chalekuma-rgb/Ardaita-Unity-and-Development-Association/raw/main/assets/$fileName';
-    final resourceUri = Uri.parse(githubUrl);
+    final encodedFileName = Uri.encodeComponent(fileName);
+    return Uri.parse(
+      'https://chalekuma-rgb.github.io/ardaita_website/assets/$encodedFileName',
+    );
+  }
+
+  static Uri buildViewerUri(String assetPath) {
+    final rawUri = buildDownloadUri(assetPath);
+    final fileName = rawUri.pathSegments.last.toLowerCase();
+
+    if (fileName.endsWith('.pdf')) {
+      return Uri.parse(
+        'https://docs.google.com/viewer?embedded=true&url=${Uri.encodeComponent(rawUri.toString())}',
+      );
+    }
+
+    if (fileName.endsWith('.doc') ||
+        fileName.endsWith('.docx') ||
+        fileName.endsWith('.xls') ||
+        fileName.endsWith('.xlsx')) {
+      return Uri.parse(
+        'https://view.officeapps.live.com/op/embed.aspx?src=${Uri.encodeComponent(rawUri.toString())}',
+      );
+    }
+
+    return rawUri;
+  }
+
+  Future<void> _openResource(BuildContext context, String assetPath) async {
+    final resourceUri = buildViewerUri(assetPath);
     final opened = await launchUrl(resourceUri, webOnlyWindowName: '_blank');
 
     if (!opened && context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Unable to open the selected resource.')),
+      );
+    }
+  }
+
+  Future<void> _downloadResource(BuildContext context, String assetPath) async {
+    final downloadUri = buildDownloadUri(assetPath);
+    final fileName = assetPath.replaceFirst('assets/', '');
+
+    if (kIsWeb) {
+      final anchor = html.AnchorElement(href: downloadUri.toString())
+        ..target = '_blank'
+        ..rel = 'noopener'
+        ..setAttribute('download', fileName);
+      html.document.body?.children.add(anchor);
+      anchor.click();
+      anchor.remove();
+      return;
+    }
+
+    final opened = await launchUrl(downloadUri, webOnlyWindowName: '_blank');
+
+    if (!opened && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Unable to download the selected resource.'),
+        ),
       );
     }
   }
@@ -2115,9 +2159,26 @@ class ResourcesPage extends StatelessWidget {
                     style: const TextStyle(fontWeight: FontWeight.w500),
                   ),
                   subtitle: Text(resource['description']!),
-                  trailing: const Icon(
-                    Icons.download_rounded,
-                    color: Colors.green,
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        tooltip: 'Open document',
+                        icon: const Icon(
+                          Icons.open_in_new_rounded,
+                          color: Colors.green,
+                        ),
+                        onPressed: () => _openResource(context, assetPath),
+                      ),
+                      IconButton(
+                        tooltip: 'Download document',
+                        icon: const Icon(
+                          Icons.download_rounded,
+                          color: Colors.green,
+                        ),
+                        onPressed: () => _downloadResource(context, assetPath),
+                      ),
+                    ],
                   ),
                   onTap: () => _openResource(context, assetPath),
                 );
@@ -2132,6 +2193,86 @@ class ResourcesPage extends StatelessWidget {
 
 class GalleryPage extends StatelessWidget {
   const GalleryPage({super.key});
+
+  void _openImageViewer(
+    BuildContext context,
+    String imagePath,
+    String imageName,
+  ) {
+    showDialog(
+      context: context,
+      builder: (_) {
+        final screenWidth = MediaQuery.of(context).size.width;
+        final screenHeight = MediaQuery.of(context).size.height;
+
+        return Dialog(
+          insetPadding: const EdgeInsets.all(16),
+          backgroundColor: Colors.black87,
+          child: SizedBox(
+            width: screenWidth * 0.9,
+            height: screenHeight * 0.82,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Align(
+                  alignment: Alignment.topRight,
+                  child: IconButton(
+                    icon: const Icon(Icons.close, color: Colors.white),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+                    child: Center(
+                      child: InteractiveViewer(
+                        minScale: 1,
+                        maxScale: 4,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.asset(
+                            imagePath,
+                            fit: BoxFit.contain,
+                            width: screenWidth * 0.75,
+                            height: screenHeight * 0.62,
+                            errorBuilder: (context, error, stackTrace) {
+                              return SizedBox(
+                                width: screenWidth * 0.75,
+                                height: screenHeight * 0.62,
+                                child: const Center(
+                                  child: Icon(
+                                    Icons.broken_image_outlined,
+                                    color: Colors.white70,
+                                    size: 48,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                  child: Text(
+                    imageName,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -2183,53 +2324,60 @@ class GalleryPage extends StatelessWidget {
               ),
               itemCount: images.length,
               itemBuilder: (context, index) {
-                return ClipRRect(
+                final imagePath = images[index]['path']!;
+                final imageName = images[index]['name']!;
+
+                return InkWell(
+                  onTap: () => _openImageViewer(context, imagePath, imageName),
                   borderRadius: BorderRadius.circular(16),
-                  child: Container(
-                    color: Colors.green.shade50,
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        Image.asset(
-                          images[index]['path']!,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Center(
-                              child: Icon(
-                                Icons.broken_image_outlined,
-                                size: 40,
-                                color: Colors.green.shade200,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: Container(
+                      color: Colors.green.shade50,
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          Image.asset(
+                            imagePath,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Center(
+                                child: Icon(
+                                  Icons.broken_image_outlined,
+                                  size: 40,
+                                  color: Colors.green.shade200,
+                                ),
+                              );
+                            },
+                          ),
+                          Positioned(
+                            bottom: 0,
+                            left: 0,
+                            right: 0,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.bottomCenter,
+                                  end: Alignment.topCenter,
+                                  colors: [
+                                    Colors.black.withOpacity(0.6),
+                                    Colors.transparent,
+                                  ],
+                                ),
                               ),
-                            );
-                          },
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          left: 0,
-                          right: 0,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.bottomCenter,
-                                end: Alignment.topCenter,
-                                colors: [
-                                  Colors.black.withOpacity(0.6),
-                                  Colors.transparent,
-                                ],
-                              ),
-                            ),
-                            padding: const EdgeInsets.all(16),
-                            child: Text(
-                              images[index]['name']!,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
+                              padding: const EdgeInsets.all(16),
+                              child: Text(
+                                imageName,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 );

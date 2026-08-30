@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <!-- Base href: update if deploying under a repo path -->
-  <base href="/">
+  <base href="/ardaita_website/">
 
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
@@ -23,18 +23,14 @@
   <!-- Manifest -->
   <link rel="manifest" href="manifest.json">
 
-<<<<<<< HEAD:build/web/index.html
   <title>NGO Website</title>
-=======
-  <title>Kecho NGO Website</title>
->>>>>>> gh-pages:index.html
 
   <!-- Basic styling for loading screen -->
   <style>
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #f9f9f9;
+      background: #f5f5f5;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -42,19 +38,34 @@
     }
     #loading {
       text-align: center;
-      color: #333;
+      color: #2e7d32;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
     }
     #loading img {
-      width: 80px;
-      height: 80px;
-      margin-bottom: 20px;
+      width: 140px;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 50%;
+      background: #f5f5f5;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+      display: block;
+    }
+    #loading p {
+      margin: 0;
+      font-size: 30px;
+      font-weight: 700;
+      color: #2e7d32;
+      line-height: 1.2;
     }
   </style>
 </head>
 <body>
 <!-- Loading screen before Flutter app initializes -->
 <div id="loading">
-  <img src="assets/icons/icon-192.png" alt="Loading icon">
+  <img src="assets/New_Logo.jpg" alt="Ardaita NGO logo">
   <p>Loading Ardaita NGO Website...</p>
 </div>
 
