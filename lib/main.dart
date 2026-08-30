@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -57,6 +59,203 @@ class MainLayout extends StatefulWidget {
 
   @override
   State<MainLayout> createState() => _MainLayoutState();
+}
+
+class HoverableFloatingMenu extends StatefulWidget {
+  final Widget child;
+  const HoverableFloatingMenu({super.key, required this.child});
+
+  @override
+  State<HoverableFloatingMenu> createState() => _HoverableFloatingMenuState();
+}
+
+class _HoverableFloatingMenuState extends State<HoverableFloatingMenu> {
+  bool _isHovering = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovering = true),
+      onExit: (_) => setState(() => _isHovering = false),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        curve: Curves.easeOut,
+        transform: Matrix4.translationValues(0, _isHovering ? -3 : 0, 0),
+        child: widget.child,
+      ),
+    );
+  }
+}
+
+class HoverDropdownItem {
+  final String label;
+  final VoidCallback onPressed;
+
+  const HoverDropdownItem({required this.label, required this.onPressed});
+}
+
+class HoverDropdownMenu extends StatefulWidget {
+  final String label;
+  final bool isSelected;
+  final List<HoverDropdownItem> items;
+
+  const HoverDropdownMenu({
+    super.key,
+    required this.label,
+    required this.isSelected,
+    required this.items,
+  });
+
+  @override
+  State<HoverDropdownMenu> createState() => _HoverDropdownMenuState();
+}
+
+class _HoverDropdownMenuState extends State<HoverDropdownMenu> {
+  final LayerLink _layerLink = LayerLink();
+  OverlayEntry? _overlayEntry;
+  bool _isOpen = false;
+  Timer? _closeTimer;
+
+  void _cancelClose() {
+    _closeTimer?.cancel();
+    _closeTimer = null;
+  }
+
+  void _scheduleClose() {
+    _cancelClose();
+    _closeTimer = Timer(const Duration(milliseconds: 120), () {
+      if (mounted) {
+        _close();
+      }
+    });
+  }
+
+  void _close() {
+    _cancelClose();
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+    if (mounted) {
+      setState(() => _isOpen = false);
+    }
+  }
+
+  void _open() {
+    if (_overlayEntry != null) return;
+
+    final overlay = Overlay.of(context);
+    _overlayEntry = OverlayEntry(
+      builder: (context) {
+        return Positioned(
+          width: 220,
+          child: CompositedTransformFollower(
+            link: _layerLink,
+            offset: const Offset(0, 42),
+            child: MouseRegion(
+              onEnter: (_) => _cancelClose(),
+              onExit: (_) => _scheduleClose(),
+              child: Material(
+                elevation: 8,
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: widget.items
+                        .map(
+                          (item) => InkWell(
+                            onTap: () {
+                              item.onPressed();
+                              _close();
+                            },
+                            child: Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 12,
+                              ),
+                              child: Text(
+                                item.label,
+                                style: const TextStyle(
+                                  color: Colors.black87,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
+    overlay.insert(_overlayEntry!);
+    setState(() => _isOpen = true);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final trigger = HoverableFloatingMenu(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: widget.isSelected
+              ? Colors.white.withOpacity(0.1)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              widget.label,
+              style: TextStyle(
+                color: widget.isSelected ? Colors.white : Colors.green.shade100,
+                fontWeight: widget.isSelected
+                    ? FontWeight.bold
+                    : FontWeight.normal,
+                fontSize: 14,
+              ),
+            ),
+            const SizedBox(width: 4),
+            Icon(
+              Icons.arrow_drop_down,
+              color: widget.isSelected ? Colors.white : Colors.green.shade100,
+              size: 20,
+            ),
+          ],
+        ),
+      ),
+    );
+
+    return CompositedTransformTarget(
+      link: _layerLink,
+      child: MouseRegion(
+        onEnter: (_) {
+          _cancelClose();
+          if (!_isOpen) _open();
+        },
+        onExit: (_) => _scheduleClose(),
+        child: InkWell(
+          onTap: () {
+            if (_isOpen) {
+              _close();
+            } else {
+              _open();
+            }
+          },
+          borderRadius: BorderRadius.circular(8),
+          child: trigger,
+        ),
+      ),
+    );
+  }
 }
 
 class _MainLayoutState extends State<MainLayout> {
@@ -134,20 +333,24 @@ class _MainLayoutState extends State<MainLayout> {
     bool isSelected = _selectedIndex == index;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4.0),
-      child: TextButton(
-        onPressed: () => setState(() => _selectedIndex = index),
-        style: TextButton.styleFrom(
-          foregroundColor: isSelected ? Colors.white : Colors.green.shade100,
-          backgroundColor: isSelected
-              ? Colors.white.withOpacity(0.1)
-              : Colors.transparent,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-            fontSize: 14,
+      child: HoverableFloatingMenu(
+        child: TextButton(
+          onPressed: () => setState(() => _selectedIndex = index),
+          style: TextButton.styleFrom(
+            foregroundColor: isSelected ? Colors.white : Colors.green.shade100,
+            backgroundColor: isSelected
+                ? Colors.white.withOpacity(0.1)
+                : Colors.transparent,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          child: Text(
+            label,
+            style: TextStyle(
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              fontSize: 14,
+            ),
           ),
         ),
       ),
@@ -158,47 +361,38 @@ class _MainLayoutState extends State<MainLayout> {
     final isSelected = _selectedIndex == 1;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4.0),
-      child: PopupMenuButton<int?>(
-        onSelected: (value) {
-          setState(() {
-            _selectedIndex = 1;
-            _aboutUsSubTab = value;
-          });
-        },
-        itemBuilder: (context) => const [
-          PopupMenuItem<int?>(value: null, child: Text('About Us')),
-          PopupMenuItem<int?>(value: 0, child: Text('Who We Are')),
-          PopupMenuItem<int?>(value: 1, child: Text('What We Do')),
-          PopupMenuItem<int?>(value: 2, child: Text('Initiatives')),
+      child: HoverDropdownMenu(
+        label: 'About Us',
+        isSelected: isSelected,
+        items: [
+          HoverDropdownItem(
+            label: 'Who We Are',
+            onPressed: () {
+              setState(() {
+                _selectedIndex = 1;
+                _aboutUsSubTab = 0;
+              });
+            },
+          ),
+          HoverDropdownItem(
+            label: 'What We Do',
+            onPressed: () {
+              setState(() {
+                _selectedIndex = 1;
+                _aboutUsSubTab = 1;
+              });
+            },
+          ),
+          HoverDropdownItem(
+            label: 'Initiatives',
+            onPressed: () {
+              setState(() {
+                _selectedIndex = 1;
+                _aboutUsSubTab = 2;
+              });
+            },
+          ),
         ],
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          decoration: BoxDecoration(
-            color: isSelected
-                ? Colors.white.withOpacity(0.1)
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'About Us',
-                style: TextStyle(
-                  color: isSelected ? Colors.white : Colors.green.shade100,
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                  fontSize: 14,
-                ),
-              ),
-              const SizedBox(width: 4),
-              Icon(
-                Icons.arrow_drop_down,
-                color: isSelected ? Colors.white : Colors.green.shade100,
-                size: 20,
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
@@ -207,46 +401,29 @@ class _MainLayoutState extends State<MainLayout> {
     final isSelected = _selectedIndex == 2;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4.0),
-      child: PopupMenuButton<int?>(
-        onSelected: (value) {
-          setState(() {
-            _selectedIndex = 2;
-            _resourcesSubTab = value;
-          });
-        },
-        itemBuilder: (context) => const [
-          PopupMenuItem<int?>(value: null, child: Text('Resources')),
-          PopupMenuItem<int?>(value: 0, child: Text('Documents')),
-          PopupMenuItem<int?>(value: 1, child: Text('Gallery')),
+      child: HoverDropdownMenu(
+        label: 'Resources',
+        isSelected: isSelected,
+        items: [
+          HoverDropdownItem(
+            label: 'Documents',
+            onPressed: () {
+              setState(() {
+                _selectedIndex = 2;
+                _resourcesSubTab = 0;
+              });
+            },
+          ),
+          HoverDropdownItem(
+            label: 'Gallery',
+            onPressed: () {
+              setState(() {
+                _selectedIndex = 2;
+                _resourcesSubTab = 1;
+              });
+            },
+          ),
         ],
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          decoration: BoxDecoration(
-            color: isSelected
-                ? Colors.white.withOpacity(0.1)
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Resources',
-                style: TextStyle(
-                  color: isSelected ? Colors.white : Colors.green.shade100,
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                  fontSize: 14,
-                ),
-              ),
-              const SizedBox(width: 4),
-              Icon(
-                Icons.arrow_drop_down,
-                color: isSelected ? Colors.white : Colors.green.shade100,
-                size: 20,
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
@@ -255,45 +432,20 @@ class _MainLayoutState extends State<MainLayout> {
     final isSelected = _selectedIndex == 3;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4.0),
-      child: PopupMenuButton<int?>(
-        onSelected: (value) {
-          setState(() {
-            _selectedIndex = 3;
-            _volunteerSubTab = value;
-          });
-        },
-        itemBuilder: (context) => const [
-          PopupMenuItem<int?>(value: null, child: Text('Volunteer')),
-          PopupMenuItem<int?>(value: 0, child: Text('Become a Volunteer')),
+      child: HoverDropdownMenu(
+        label: 'Volunteer',
+        isSelected: isSelected,
+        items: [
+          HoverDropdownItem(
+            label: 'Become a Volunteer',
+            onPressed: () {
+              setState(() {
+                _selectedIndex = 3;
+                _volunteerSubTab = 0;
+              });
+            },
+          ),
         ],
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          decoration: BoxDecoration(
-            color: isSelected
-                ? Colors.white.withOpacity(0.1)
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Volunteer',
-                style: TextStyle(
-                  color: isSelected ? Colors.white : Colors.green.shade100,
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                  fontSize: 14,
-                ),
-              ),
-              const SizedBox(width: 4),
-              Icon(
-                Icons.arrow_drop_down,
-                color: isSelected ? Colors.white : Colors.green.shade100,
-                size: 20,
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
@@ -745,7 +897,7 @@ class HomePage extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 const Text(
-                  'Ardaita, Ethiopia | info@ardaitaunity.org',
+                  'Ardaita, Ethiopia | info@ardaita-asca.org',
                   style: TextStyle(color: Colors.white54),
                 ),
               ],
@@ -2196,7 +2348,7 @@ class _ContactUsPageState extends State<ContactUsPage> {
                     _buildContactMethod(
                       Icons.email_rounded,
                       'Email Us',
-                      'info@ardaitaunity.org',
+                      'info@ardaita-asca.org',
                     ),
                     const SizedBox(height: 24),
                     _buildContactMethod(
@@ -2367,8 +2519,6 @@ class DonatePage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const Icon(Icons.favorite_rounded, color: Colors.red, size: 80),
-          const SizedBox(height: 24),
           Text(
             'Support Our Cause',
             style: Theme.of(context).textTheme.displayMedium,
@@ -2394,7 +2544,7 @@ class DonatePage extends StatelessWidget {
             child: const Column(
               children: [
                 Text(
-                  'Account Name: Ardaita and its Surrounding Charittable Association',
+                  'Account Name: Ardaita and Surrounding Charity Association',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 20,
@@ -2419,48 +2569,6 @@ class DonatePage extends StatelessWidget {
             'Your generous donation helps us continue our mission to empower the Ardaita community through education, health, and sustainable development.',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 18, height: 1.6),
-          ),
-          const SizedBox(height: 48),
-          Wrap(
-            spacing: 24,
-            runSpacing: 24,
-            alignment: WrapAlignment.center,
-            children: [
-              _buildDonationCard(
-                context,
-                '\$1',
-                'Provides school supplies for one student',
-              ),
-              _buildDonationCard(
-                context,
-                '\$5',
-                'Supports a local community health workshop',
-              ),
-              _buildDonationCard(
-                context,
-                '\$10',
-                'Funds a small-scale conservation project',
-              ),
-              _buildDonationCard(
-                context,
-                'Custom',
-                'Any amount makes a significant difference',
-              ),
-            ],
-          ),
-          const SizedBox(height: 48),
-          ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF2E7D32),
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 20),
-              textStyle: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            child: const Text('Donate Now'),
           ),
         ],
       ),
