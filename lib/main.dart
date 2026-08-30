@@ -358,7 +358,7 @@ class _MainLayoutState extends State<MainLayout> {
             if (!isCompact) ...[
               const SizedBox(width: 12),
               const Text(
-                'Ardaita Unity and Development Association',
+                'Ardaita and Surrounding Charity Association',
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
