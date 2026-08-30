@@ -22,6 +22,7 @@ class MyTrendingWebApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
+        fontFamily: 'Segoe UI',
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.green,
           primary: const Color(0xFF2E7D32), // Dark Green
@@ -32,6 +33,8 @@ class MyTrendingWebApp extends StatelessWidget {
           backgroundColor: Color(0xFF2E7D32),
           foregroundColor: Colors.white,
           elevation: 2,
+          titleSpacing: 20,
+          toolbarHeight: 72,
         ),
         textTheme: const TextTheme(
           displayLarge: TextStyle(
@@ -261,6 +264,7 @@ class _HoverDropdownMenuState extends State<HoverDropdownMenu> {
 }
 
 class _MainLayoutState extends State<MainLayout> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int _selectedIndex = 0;
   int? _aboutUsSubTab;
   int? _resourcesSubTab;
@@ -284,43 +288,91 @@ class _MainLayoutState extends State<MainLayout> {
     const DonatePage(),
   ];
 
+  List<Widget> _buildDesktopActions() => [
+    _buildTopMenuItem(0, 'Home'),
+    _buildAboutUsMenu(),
+    _buildResourcesMenu(),
+    _buildVolunteerMenu(),
+    _buildTopMenuItem(4, 'Contact Us'),
+    _buildTopMenuItem(5, 'Donate'),
+    const SizedBox(width: 20),
+  ];
+
   @override
   Widget build(BuildContext context) {
+    final isCompact = MediaQuery.of(context).size.width < 980;
+
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
-        title: Container(
-          width: 50,
-          height: 50,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(50),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.2),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: isCompact ? 42 : 50,
+              height: isCompact ? 42 : 50,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(50),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: ClipOval(
+                child: Image.asset(
+                  'assets/New_Logo.jpg',
+                  width: isCompact ? 42 : 50,
+                  height: isCompact ? 42 : 50,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            if (!isCompact) ...[
+              const SizedBox(width: 12),
+              const Text(
+                'Ardaita Unity and Development Association',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.2,
+                ),
               ),
             ],
-          ),
-          child: ClipOval(
-            child: Image.asset(
-              'assets/New_Logo.jpg',
-              width: 50,
-              height: 50,
-              fit: BoxFit.cover,
-            ),
-          ),
+          ],
         ),
-        actions: [
-          _buildTopMenuItem(0, 'Home'),
-          _buildAboutUsMenu(),
-          _buildResourcesMenu(),
-          _buildVolunteerMenu(),
-          _buildTopMenuItem(4, 'Contact Us'),
-          _buildTopMenuItem(5, 'Donate'),
-          const SizedBox(width: 20),
-        ],
+        automaticallyImplyLeading: false,
+        actions: isCompact
+            ? [
+                IconButton(
+                  icon: const Icon(Icons.menu_rounded),
+                  onPressed: () => _scaffoldKey.currentState?.openEndDrawer(),
+                  tooltip: 'Open navigation menu',
+                ),
+                const SizedBox(width: 8),
+              ]
+            : _buildDesktopActions(),
       ),
+      drawer: isCompact
+          ? Drawer(
+              child: SafeArea(
+                child: ListView(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  children: [
+                    _buildDrawerItem('Home', 0),
+                    _buildDrawerItem('About Us', 1, subTab: 0),
+                    _buildDrawerItem('Resources', 2, subTab: 0),
+                    _buildDrawerItem('Volunteer', 3, subTab: 0),
+                    _buildDrawerItem('Contact Us', 4),
+                    _buildDrawerItem('Donate', 5),
+                  ],
+                ),
+              ),
+            )
+          : null,
       body: AnimatedSwitcher(
         duration: const Duration(milliseconds: 400),
         transitionBuilder: (Widget child, Animation<double> animation) {
@@ -328,6 +380,29 @@ class _MainLayoutState extends State<MainLayout> {
         },
         child: _pages[_selectedIndex],
       ),
+    );
+  }
+
+  Widget _buildDrawerItem(String label, int index, {int? subTab}) {
+    final isSelected = _selectedIndex == index;
+    return ListTile(
+      title: Text(
+        label,
+        style: TextStyle(
+          fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+          color: isSelected ? const Color(0xFF2E7D32) : Colors.black87,
+        ),
+      ),
+      selected: isSelected,
+      onTap: () {
+        setState(() {
+          _selectedIndex = index;
+          if (index == 1) _aboutUsSubTab = subTab ?? 0;
+          if (index == 2) _resourcesSubTab = subTab ?? 0;
+          if (index == 3) _volunteerSubTab = subTab ?? 0;
+        });
+        Navigator.of(context).pop();
+      },
     );
   }
 
@@ -343,6 +418,7 @@ class _MainLayoutState extends State<MainLayout> {
             backgroundColor: isSelected
                 ? Colors.white.withOpacity(0.1)
                 : Colors.transparent,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
             ),
@@ -352,6 +428,7 @@ class _MainLayoutState extends State<MainLayout> {
             style: TextStyle(
               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
               fontSize: 14,
+              letterSpacing: 0.15,
             ),
           ),
         ),
