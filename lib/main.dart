@@ -2538,14 +2538,12 @@ class _ContactUsPageState extends State<ContactUsPage> {
     try {
       final mailtoUri = Uri(
         scheme: 'mailto',
-        path: 'info@ardaitaunity.org',
-        queryParameters: {
-          'subject': 'Contact request from ${_nameController.text.trim()}',
-          'body':
-              'Name: ${_nameController.text.trim()}\n'
-              'Email: ${_emailController.text.trim()}\n\n'
-              '${_messageController.text.trim()}',
-        },
+        path: 'info@ardaita-asca.org',
+        query:
+            'subject=${Uri.encodeComponent('Contact request from ${_nameController.text.trim()}')}'
+            '&body=${Uri.encodeComponent('Name: ${_nameController.text.trim()}\n'
+            'Email: ${_emailController.text.trim()}\n\n'
+            '${_messageController.text.trim()}')}',
       );
       final opened = await launchUrl(mailtoUri);
       if (!opened) {
@@ -2929,15 +2927,12 @@ class _BecomeVolunteerPageState extends State<BecomeVolunteerPage> {
       final mailtoUri = Uri(
         scheme: 'mailto',
         path: 'info@ardaitaunity.org',
-        queryParameters: {
-          'subject':
-              'Volunteer application from ${_nameController.text.trim()}',
-          'body':
-              'Name: ${_nameController.text.trim()}\n'
-              'Email: ${_emailController.text.trim()}\n'
-              'Initiative: ${selectedInitiative!.trim()}\n\n'
-              'Motivation:\n${_motivationController.text.trim()}',
-        },
+        query:
+            'subject=${Uri.encodeComponent('Volunteer application from ${_nameController.text.trim()}')}'
+            '&body=${Uri.encodeComponent('Name: ${_nameController.text.trim()}\n'
+            'Email: ${_emailController.text.trim()}\n'
+            'Initiative: ${selectedInitiative!.trim()}\n\n'
+            'Motivation:\n${_motivationController.text.trim()}')}',
       );
       final opened = await launchUrl(mailtoUri);
       if (!opened) {
