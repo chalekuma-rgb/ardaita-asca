@@ -87530,7 +87530,7 @@ break
 case 6:case 1:return A.P(q,r)
 case 2:return A.O(o.at(-1),r)}})
 return A.Q($async$kN,r)},
-L(a){var s,r,q,p,o=this,n=null,m=A.bp("Contact Us",n,n,n,A.V(a).ok.b,n,n),l=t.p,k=A.h7(A.ce(A.c([o.Cl(B.Gr,"Our Head Office","Addis Ababa, Ethiopia"),B.bn,o.Cl(B.Go,"Email Us","info@ardaita-asca.org"),B.bn,o.Cl(B.Gx,"Call Us","+251 911 000 000")],l),B.U,B.v,B.D),1),j=A.cC(16),i=A.md(B.cu,1),h=A.c([],l),g=o.x
+L(a){var s,r,q,p,o=this,n=null,m=A.bp("Contact Us",n,n,n,A.V(a).ok.b,n,n),l=t.p,k=A.h7(A.ce(A.c([o.Cl(B.Gr,"Our Head Office","Addis Ababa, Ethiopia"),B.bn,o.Cl(B.Go,"Email Us","info@ardaita-asca.org"),B.bn,o.Cl(B.Gx,"Call Us","+251 911 000 123")],l),B.U,B.v,B.D),1),j=A.cC(16),i=A.md(B.cu,1),h=A.c([],l),g=o.x
 if(g!=null){s=o.y
 r=s?B.cT:B.n5
 q=A.cC(12)
