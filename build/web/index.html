@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Base href: update if deploying under a repo path -->
+  <base href="/">
+
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Ardaita NGO Website built with Flutter Web">
+  <meta name="keywords" content="NGO, Charity, Flutter, Donations, Community">
+  <meta name="author" content="Ardaita and Surrounding Charity Association">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/New_Logo.jpg"/>
+
+  <!-- Manifest -->
+  <link rel="manifest" href="manifest.json">
+
+  <title>Ardaita and Surrounding Charity Association</title>
+
+  <!-- Basic styling for loading screen -->
+  <style>
+    html, body {
+      margin: 0;
+      width: 100%;
+      min-height: 100%;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: #fffaf0;
+      color: #2e7d32;
+    }
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    #loading {
+      text-align: center;
+      color: #2e7d32;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      padding: 24px;
+      opacity: 1;
+      transition: opacity 0.35s ease;
+    }
+    #loading img {
+      width: 140px;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 50%;
+      background: #ffffff;
+      box-shadow: 0 12px 24px rgba(46, 125, 50, 0.18);
+      display: block;
+    }
+    #loading p {
+      margin: 0;
+      font-size: clamp(1.3rem, 3vw, 2rem);
+      font-weight: 700;
+      color: #2e7d32;
+      line-height: 1.2;
+      letter-spacing: 0.04em;
+    }
+  </style>
+</head>
+<body>
+  <div id="loading" aria-live="polite">
+    <img src="assets/New_Logo.jpg" alt="Ardaita NGO logo">
+    <p>Loading Ardaita website...</p>
+  </div>
+
+  <script>
+    window.addEventListener('flutter-first-frame', function () {
+      const loading = document.getElementById('loading');
+      if (!loading) return;
+      loading.style.opacity = '0';
+      setTimeout(() => loading.remove(), 350);
+    });
+
+    window.addEventListener('load', function () {
+      const loading = document.getElementById('loading');
+      if (!loading) return;
+      setTimeout(function () {
+        if (document.querySelector('flutter-view')) {
+          loading.style.opacity = '0';
+          setTimeout(() => loading.remove(), 350);
+        }
+      }, 15000);
+    });
+  </script>
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>
